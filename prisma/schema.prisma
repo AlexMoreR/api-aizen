@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime
+  User              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model ApiKey {
+  id        String   @id
+  url       String
+  key       String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Instancias {
+  id           Int    @id @default(autoincrement())
+  instanceName String @unique
+  userId       String
+  instanceId   String
+  User         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Pausar {
+  userId      String
+  mensaje     String   @default("Fue un gusto ayudarte.")
+  tipo        String
+  baseurl     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  apikeyId    String
+  instanciaId String
+  id          Int      @id @default(autoincrement())
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  userId     String
+  remoteJid  String
+  pushName   String
+  instanceId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  status     Boolean
+  id         Int      @id @default(autoincrement())
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SystemMessage {
+  id        String   @id
+  message   String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  title     String   @default("Sin título")
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Tools {
+  id          String   @id
+  name        String
+  description String?
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                 String          @id
+  name               String?
+  email              String          @unique
+  password           String?
+  emailVerified      DateTime?
+  image              String?
+  role               Role            @default(user)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime
+  apiUrl             String          @default("https://api.openAI.co")
+  company            String          @default("Empresa Demo")
+  lat                String          @default("0.0000")
+  lng                String          @default("0.0000")
+  mapsUrl            String          @default("https://maps.google.com/?q=0,0")
+  notificationNumber String          @default("0000000000")
+  openingPhrase      String?         @default("DEPRECATED")
+  Account            Account[]
+  ApiKey             ApiKey[]
+  Instancias         Instancias[]
+  Pausar             Pausar[]
+  Session            Session[]
+  SystemMessage      SystemMessage[]
+  Tools              Tools[]
+}
+
+model VerificationToken {
+  identifier String   @id @unique
+  token      String
+  expires    DateTime
+}
+
+model Workflow {
+  id          String   @id
+  userId      String
+  name        String
+  description String?
+  definition  String
+  status      String
+  createdAt   DateTime @default(now())
+  updateAt    DateTime
+
+  @@unique([name, userId])
+}
+
+model WorkflowNode {
+  id         String   @id
+  workflowId String
+  message    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  tipo       String
+  url        String?
+}
+
+model n8n_chat_historial {
+  id         Int      @id @default(autoincrement())
+  message    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  session_id String
+}
+
+model n8n_chat_histories {
+  id         Int    @id @default(autoincrement())
+  session_id String @db.VarChar(255)
+  message    Json
+}
+
+enum Role {
+  user
+  admin
+}
