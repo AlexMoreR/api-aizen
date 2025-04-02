@@ -9,11 +9,11 @@ import { firstValueFrom } from 'rxjs';
 export class WorkflowService {
 
     constructor(
-        private prisma: PrismaService, 
+        private prisma: PrismaService,
         private http: HttpService
-    ) {}
+    ) { }
 
-    getWorkflow(){
+    getWorkflow() {
         return this.prisma.workflow.findMany();
     }
 
@@ -51,8 +51,9 @@ export class WorkflowService {
 
             // Puedes condicionar según el tipo de nodo
             if (node.tipo === 'Texto') {
-    
-                const url = `https://${workflow.urlevo}/message/sendText/${workflow.instanciaid}`;
+
+                // const url = `https://${workflow.urlevo}/message/sendText/${workflow.instanciaid}`;
+                const url = `${workflow.urlevo}/message/sendText/${workflow.instanciaid}`;
 
                 const body = {
                     number: workflow.remoteJid,
@@ -60,17 +61,31 @@ export class WorkflowService {
                         delay: 100,
                         presence: "composing"
                     },
-                    textMessage: {
-                        text: node.message // <- aquí el texto que quieras enviar
-                    }
+                    text: node.message // <-- aquí va directamente "text", no "textMessage"
                 };
-
                 await firstValueFrom(this.http.post(url, body, { headers: { 'Content-Type': 'application/json', 'apikey': workflow.apikey } }));
                 console.log(`✅ Texto enviado (nodo ${node.id})`);
 
+                // Texto
+                // Imagen
+                // Video
+                // Archivo/Documento
+                // Audio
+                
+            } else if (node.tipo === 'Imagen' || node.tipo === 'Video' || node.tipo === 'Documento') {
+                // const url = `https://${workflow.urlevo}/message/sendText/${workflow.instanciaid}`;
+                const url = `${workflow.urlevo}/message/sendMedia/${workflow.instanciaid}`;
 
-            } else if (node.tipo === 'Imagen' || node.tipo === 'Video' || node.tipo === 'Documento'){
-
+                const body = {
+                    number: workflow.remoteJid,
+                    mediatype: node.tipo, // Opciones: image, video o document
+                    mimetype: node.tipo,
+                    caption: node.message,
+                    media: node.url
+                    // fileName: "documento.pdf",
+                };
+                await firstValueFrom(this.http.post(url, body, { headers: { 'Content-Type': 'application/json', 'apikey': workflow.apikey } }));
+                console.log(`✅ Texto enviado (nodo ${node.id})`);
             }
         }
 

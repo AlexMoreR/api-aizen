@@ -44,21 +44,29 @@ let WorkflowService = class WorkflowService {
         for (const node of nodes) {
             console.log('Procesando nodo', node);
             if (node.tipo === 'Texto') {
-                const url = `https://${workflow.urlevo}/message/sendText/${workflow.instanciaid}`;
+                const url = `${workflow.urlevo}/message/sendText/${workflow.instanciaid}`;
                 const body = {
                     number: workflow.remoteJid,
                     options: {
                         delay: 100,
                         presence: "composing"
                     },
-                    textMessage: {
-                        text: node.message
-                    }
+                    text: node.message
                 };
                 await (0, rxjs_1.firstValueFrom)(this.http.post(url, body, { headers: { 'Content-Type': 'application/json', 'apikey': workflow.apikey } }));
                 console.log(`✅ Texto enviado (nodo ${node.id})`);
             }
             else if (node.tipo === 'Imagen' || node.tipo === 'Video' || node.tipo === 'Documento') {
+                const url = `${workflow.urlevo}/message/sendMedia/${workflow.instanciaid}`;
+                const body = {
+                    number: workflow.remoteJid,
+                    mediatype: node.tipo,
+                    mimetype: node.tipo,
+                    caption: node.message,
+                    media: node.url
+                };
+                await (0, rxjs_1.firstValueFrom)(this.http.post(url, body, { headers: { 'Content-Type': 'application/json', 'apikey': workflow.apikey } }));
+                console.log(`✅ Texto enviado (nodo ${node.id})`);
             }
         }
         return { message: 'Workflow ejecutado', workflow: result.name, totalNodes: nodes.length };
