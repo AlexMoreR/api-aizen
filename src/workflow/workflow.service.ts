@@ -10,7 +10,10 @@ import { firstValueFrom } from 'rxjs';
 @Injectable()
 export class WorkflowService {
 
-    constructor(private prisma: PrismaService, private http: HttpService) {}
+    constructor(
+        private prisma: PrismaService, 
+        // private http: HttpService
+    ) {}
 
     getWorkflow(){
         return this.prisma.workflow.findMany();
