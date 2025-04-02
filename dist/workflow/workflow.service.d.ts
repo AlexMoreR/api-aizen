@@ -1,10 +1,11 @@
+import { HttpService } from '@nestjs/axios';
 import { PrismaService } from 'src/prisma.service';
-import { Prisma } from '@prisma/client';
 import { ExecuteWorkflowDto } from './dto/executeWorkflow-dto';
 export declare class WorkflowService {
     private prisma;
-    constructor(prisma: PrismaService);
-    getWorkflow(): Prisma.PrismaPromise<{
+    private http;
+    constructor(prisma: PrismaService, http: HttpService);
+    getWorkflow(): import(".prisma/client").Prisma.PrismaPromise<{
         id: string;
         userId: string;
         name: string;
@@ -14,5 +15,9 @@ export declare class WorkflowService {
         createdAt: Date;
         updateAt: Date;
     }[]>;
-    executeWorkflow(workflow: ExecuteWorkflowDto): Promise<string>;
+    executeWorkflow(workflow: ExecuteWorkflowDto): Promise<{
+        message: string;
+        workflow: string;
+        totalNodes: number;
+    }>;
 }

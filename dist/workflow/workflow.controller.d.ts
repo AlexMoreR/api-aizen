@@ -13,5 +13,9 @@ export declare class WorkflowController {
         createdAt: Date;
         updateAt: Date;
     }[]>;
-    executeWorkflow(workflow: ExecuteWorkflowDto): Promise<string>;
+    executeWorkflow(workflow: ExecuteWorkflowDto): Promise<{
+        message: string;
+        workflow: string;
+        totalNodes: number;
+    }>;
 }

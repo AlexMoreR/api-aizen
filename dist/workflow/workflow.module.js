@@ -11,11 +11,13 @@ const common_1 = require("@nestjs/common");
 const workflow_controller_1 = require("./workflow.controller");
 const workflow_service_1 = require("./workflow.service");
 const prisma_service_1 = require("../prisma.service");
+const axios_1 = require("@nestjs/axios");
 let WorkflowModule = class WorkflowModule {
 };
 exports.WorkflowModule = WorkflowModule;
 exports.WorkflowModule = WorkflowModule = __decorate([
     (0, common_1.Module)({
+        imports: [axios_1.HttpModule],
         controllers: [workflow_controller_1.WorkflowController],
         providers: [workflow_service_1.WorkflowService, prisma_service_1.PrismaService]
     })
