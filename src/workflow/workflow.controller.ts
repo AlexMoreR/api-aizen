@@ -18,6 +18,3 @@ export class WorkflowController {
         return this.workflowService.executeWorkflow(workflow);
     }
 }
-
-    
-
